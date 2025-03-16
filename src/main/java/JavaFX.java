@@ -1,3 +1,5 @@
+import Components.Navbar;
+import Scenes.TodaysWeather;
 import javafx.application.Application;
 
 import javafx.geometry.Insets;
@@ -19,36 +21,27 @@ import weather.WeatherAPI;
 import java.util.ArrayList;
 
 public class JavaFX extends Application {
-	TextField temperature,weather;
+
+	private Navbar navbar = new Navbar();
+	Button todayButton = navbar.getTodayButton();
+	Button threeDayButton = navbar.getThreeDayButton();
 
 	public static void main(String[] args) {
 
 		launch(args);
 	}
 
-	//feel free to remove the starter code from this method
-	@Override
-	public void start(Stage primaryStage) throws Exception {
-//		primaryStage.setTitle("I'm a professional Weather App!");
-//		//int temp = WeatherAPI.getTodaysTemperature(77,70);
-//		ArrayList<Period> forecast = WeatherAPI.getForecast("LOT",77,70);
-//		if (forecast == null){
-//			throw new RuntimeException("Forecast did not load");
-//		}
-//		temperature = new TextField();
-//		weather = new TextField();
-//		temperature.setText("Today's weather is: "+String.valueOf(forecast.get(0).temperature));
-//		weather.setText(forecast.get(0).shortForecast);
-//
-//
-//
-//
-//		Scene scene = new Scene(new VBox(temperature,weather), 700,700);
-//		primaryStage.setScene(scene);
-//		primaryStage.show();
+	private BorderPane firstScene() {
+		// First scene (Adam)
+		BorderPane mainLayout = new BorderPane();
+		TodaysWeather todaysWeatherScene = new TodaysWeather();
+		mainLayout.setTop(navbar.getNavbar());
+		mainLayout.setCenter(todaysWeatherScene.getLayout());
 
-		primaryStage.setTitle("MyWeather");
+		return mainLayout;
+	}
 
+	private BorderPane secondScene() {
 		ArrayList<Period> forecast = WeatherAPI.getForecast("LOT",77,70);
 		if (forecast == null){
 			throw new RuntimeException("Forecast did not load");
@@ -60,29 +53,7 @@ public class JavaFX extends Application {
 		Image rain = new Image(getClass().getResource("/images/Rain.png").toExternalForm());
 		Image wind = new Image(getClass().getResource("/images/Wind.png").toExternalForm());
 
-
-		//############################################### Top Pane
-
-		// Logo Text
-		Label logo = new Label("MyWeather");
-		logo.setStyle("-fx-font-size: 24; -fx-font-weight: bold;");
-		logo.setMinSize(150, 30);
-		Label logoSpace = new Label();
-		logoSpace.setPrefWidth(400);
-
-		// Scene Buttons
-		Button today = new Button("Today's Weather");
-		today.setStyle("-fx-font-size: 12; -fx-font-weight: bold;");
-		Button threeDay = new Button("3-Day Forecast");
-		threeDay.setStyle("-fx-font-size: 12; -fx-font-weight: bold;");
-		today.setMinSize(150, 30);
-		threeDay.setMinSize(150, 30);
-
-
-		HBox Top = new HBox(20, logo, logoSpace, today, threeDay);
-		Top.setPadding(new Insets(20, 20, 20, 20));
-		Top.setStyle("-fx-background-color: linear-gradient(to right, white, orange)");
-
+		// Second scene (John)
 		//############################################### Center Pane
 
 		//############################### Left Panel
@@ -341,13 +312,38 @@ public class JavaFX extends Application {
 		Center.setStyle("-fx-background-color: white");
 
 		BorderPane root = new BorderPane();
-		root.setTop(Top);
+
+		root.setTop(navbar.getNavbar());
 		root.setCenter(Center);
 		root.setBottom(Bottom);
 
-		Scene scene = new Scene(root, 800, 600);
-		primaryStage.setScene(scene);
+		return root;
+	}
+
+	//feel free to remove the starter code from this method
+	@Override
+	public void start(Stage primaryStage) throws Exception {
+		BorderPane mainLayoutInitialScene = this.firstScene();
+		Scene initialScene = new Scene(mainLayoutInitialScene, 800, 600);
+
+		// Set initial scene (Today's weather)
+		primaryStage.setScene(initialScene);
+		primaryStage.setTitle("Weather App");
 		primaryStage.show();
+
+		// Switch scene logic
+		todayButton.setOnAction(e -> {
+			BorderPane mainLayoutFirstScene = this.firstScene();
+			Scene scene1 = new Scene(mainLayoutFirstScene, 800, 600);
+			primaryStage.setScene(scene1);
+		});
+
+		threeDayButton.setOnAction(e -> {
+			// Set up second scene (3-day forecast)
+			BorderPane mainLayoutSecondScene = this.secondScene();
+			Scene scene2 = new Scene(mainLayoutSecondScene, 800, 600);
+			primaryStage.setScene(scene2);
+		});
 
 	}
 
