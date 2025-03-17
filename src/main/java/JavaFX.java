@@ -43,12 +43,28 @@ public class JavaFX extends Application {
 
 	private BorderPane secondScene() {
 		ArrayList<Period> forecast = WeatherAPI.getForecast("LOT",77,70);
-		if (forecast == null){
-			throw new RuntimeException("Forecast did not load");
+		if (forecast == null || forecast.size() < 8){
+			throw new RuntimeException("Forecast did not load properly");
 		}
 
+		Period Today = forecast.getFirst();
+
+		int i = 1;
+		if (Today.isDaytime) {
+			i++;
+		}
+
+		Period Day1 = forecast.get(i);
+		Period Night1 = forecast.get(i+1);
+
+		Period Day2 = forecast.get(i+2);
+		Period Night2 = forecast.get(i+3);
+
+		Period Day3 = forecast.get(i+4);
+		Period Night3 = forecast.get(i+5);
+
 		//############ Load Images
-		Image sun = new Image(getClass().getResource("/images/Sun.png").toExternalForm());
+		Image sun = new Image(getClass().getResource("/images/Sun2.png").toExternalForm());
 		Image moon = new Image(getClass().getResource("/images/Moon.png").toExternalForm());
 		Image rain = new Image(getClass().getResource("/images/Rain.png").toExternalForm());
 		Image wind = new Image(getClass().getResource("/images/Wind.png").toExternalForm());
@@ -61,7 +77,7 @@ public class JavaFX extends Application {
 		//################# rainLeft
 
 		// rainTextDayLeft
-		Label rainTextDayLeft = new Label("T");
+		Label rainTextDayLeft = new Label(String.valueOf(Day1.probabilityOfPrecipitation.value));
 		rainTextDayLeft.setStyle("-fx-font-size: 12; -fx-font-weight: bold;");
 		// rainImageDayLeft
 		ImageView rainImageDayLeft = new ImageView(rain);
@@ -71,13 +87,14 @@ public class JavaFX extends Application {
 		// rainSpaceLeft
 		Label rainSpaceLeft = new Label("%");
 		rainSpaceLeft.setStyle("-fx-font-size: 12; -fx-font-weight: bold;");
+		rainSpaceLeft.setMinHeight(40);
 		// rainImageNightLeft
 		ImageView rainImageNightLeft = new ImageView(rain);
 		rainImageNightLeft.setFitHeight(25);
 		rainImageNightLeft.setFitWidth(25);
 		rainImageNightLeft.setPreserveRatio(true);
 		// rainTextNightLeft
-		Label rainTextNightLeft = new Label("T");
+		Label rainTextNightLeft = new Label(String.valueOf(Night1.probabilityOfPrecipitation.value));
 		rainTextNightLeft.setStyle("-fx-font-size: 12; -fx-font-weight: bold;");
 
 		VBox rainLeft = new VBox(5, rainTextDayLeft, rainImageDayLeft, rainSpaceLeft, rainImageNightLeft, rainTextNightLeft);
@@ -108,7 +125,7 @@ public class JavaFX extends Application {
 		//################# windLeft
 
 		// windTextDayLeft
-		Label windTextDayLeft = new Label("TT");
+		Label windTextDayLeft = new Label(Day1.windSpeed.substring(0,2));
 		windTextDayLeft.setStyle("-fx-font-size: 12; -fx-font-weight: bold;");
 		// windImageDayLeft
 		ImageView windImageDayLeft = new ImageView(wind);
@@ -117,22 +134,23 @@ public class JavaFX extends Application {
 		windImageDayLeft.setPreserveRatio(true);
 		// windSpaceLeft
 		Label windSpaceLeft = new Label("mph");
-		windSpaceLeft.setStyle("-fx-font-size: 12; -fx-font-weight: bold;");
+		windSpaceLeft.setStyle("-fx-font-size: 12;");
+		windSpaceLeft.setMinHeight(40);
 		// windImageNightLeft
 		ImageView windImageNightLeft = new ImageView(wind);
 		windImageNightLeft.setFitHeight(25);
 		windImageNightLeft.setFitWidth(25);
 		windImageNightLeft.setPreserveRatio(true);
 		// windTextNightLeft
-		Label windTextNightLeft = new Label("TT");
+		Label windTextNightLeft = new Label(Night1.windSpeed.substring(0,2));
 		windTextNightLeft.setStyle("-fx-font-size: 12; -fx-font-weight: bold");
 
 		VBox windLeft = new VBox(5, windTextDayLeft, windImageDayLeft, windSpaceLeft, windImageNightLeft, windTextNightLeft);
 		windLeft.setAlignment(Pos.CENTER);
 
 		//################# Temps Left
-		Label tempDayLeft = new Label("T°");
-		Label tempNightLeft = new Label("T°");
+		Label tempDayLeft = new Label(String.valueOf(Day1.temperature) + "°F");
+		Label tempNightLeft = new Label(String.valueOf(Night1.temperature) + "°F");
 		tempDayLeft.setAlignment(Pos.CENTER);
 		tempNightLeft.setAlignment(Pos.CENTER);
 		tempDayLeft.setStyle("-fx-font-size: 48; -fx-font-weight: bold;");
@@ -145,26 +163,57 @@ public class JavaFX extends Application {
 		panelLeft.setAlignment(Pos.CENTER);
 		panelLeft.setStyle("-fx-background-color: linear-gradient(to bottom, white, gray); -fx-background-radius: 25px;");
 
+		// Actions Left
+
+		unitsButtonLeft.setOnAction(e -> {
+			if (isMetricLeft) {
+				tempDayLeft.setText(String.valueOf(Day1.temperature) + "°F");
+				tempNightLeft.setText(String.valueOf(Night1.temperature) + "°F");
+				windTextDayLeft.setText(Day1.windSpeed.substring(0,2));
+				windTextNightLeft.setText(Night1.windSpeed.substring(0,2));
+				windSpaceLeft.setText("mph");
+				isMetricLeft = false;
+			} else {
+				double dayCelsius = (Day1.temperature - 32) * 5.0 / 9.0;
+				double dayKMH = (Integer.valueOf(Day1.windSpeed.substring(0,2)) * 1.60934);
+				double nightCelsius = (Night1.temperature - 32) * 5.0 / 9.0;
+				double nightKMH = (Integer.valueOf(Night1.windSpeed.substring(0,2)) * 1.60934);
+				tempDayLeft.setText(String.valueOf((int)dayCelsius) + "°C");
+				tempNightLeft.setText(String.valueOf((int)nightCelsius) + "°C");
+				windTextDayLeft.setText(String.valueOf((int)dayKMH));
+				windTextNightLeft.setText(String.valueOf((int)nightKMH));
+				windSpaceLeft.setText("kmh");
+				isMetricLeft = true;
+			}
+		});
+
 		//############################### Middle Panel
 
 		//################# rainMiddle
 
 		// rainTextDayMiddle
-		Label rainTextDayMiddle = new Label("T%");
+		Label rainTextDayMiddle = new Label(String.valueOf(Day2.probabilityOfPrecipitation.value));
+		rainTextDayMiddle.setStyle("-fx-font-size: 12; -fx-font-weight: bold;");
 		// rainImageDayMiddle
 		ImageView rainImageDayMiddle = new ImageView(rain);
 		rainImageDayMiddle.setFitHeight(25);
 		rainImageDayMiddle.setFitWidth(25);
 		rainImageDayMiddle.setPreserveRatio(true);
+		// rainSpaceMiddle
+		Label rainSpaceMiddle = new Label("%");
+		rainSpaceMiddle.setStyle("-fx-font-size: 12; -fx-font-weight: bold;");
+		rainSpaceMiddle.setMinHeight(40);
 		// rainImageNightMiddle
 		ImageView rainImageNightMiddle = new ImageView(rain);
 		rainImageNightMiddle.setFitHeight(25);
 		rainImageNightMiddle.setFitWidth(25);
 		rainImageNightMiddle.setPreserveRatio(true);
 		// rainTextNightMiddle
-		Label rainTextNightMiddle = new Label("T%");
+		Label rainTextNightMiddle = new Label(String.valueOf(Night2.probabilityOfPrecipitation.value));
+		rainTextNightMiddle.setStyle("-fx-font-size: 12; -fx-font-weight: bold;");
 
-		VBox rainMiddle = new VBox(rainTextDayMiddle, rainImageDayMiddle, rainImageNightMiddle, rainTextNightMiddle);
+		VBox rainMiddle = new VBox(5, rainTextDayMiddle, rainImageDayMiddle, rainSpaceMiddle, rainImageNightMiddle, rainTextNightMiddle);
+		rainMiddle.setAlignment(Pos.CENTER);
 
 		//################# imagesMiddle
 
@@ -173,63 +222,113 @@ public class JavaFX extends Application {
 		sunViewMiddle.setFitHeight(50);
 		sunViewMiddle.setFitWidth(50);
 		sunViewMiddle.setPreserveRatio(true);
+		// sunSpaceMiddle
+		Label sunSpaceMiddle = new Label();
 		// unitsButtonMiddle
 		Button unitsButtonMiddle = new Button("Switch Units");
+		// moonSpaceMiddle
+		Label moonSpaceMiddle = new Label();
 		// moonViewMiddle
 		ImageView moonViewMiddle = new ImageView(moon);
 		moonViewMiddle.setFitHeight(50);
 		moonViewMiddle.setFitWidth(50);
 		moonViewMiddle.setPreserveRatio(true);
 
-		VBox imagesMiddle = new VBox(sunViewMiddle, unitsButtonMiddle, moonViewMiddle);
+		VBox imagesMiddle = new VBox(10, sunViewMiddle, sunSpaceMiddle, unitsButtonMiddle, moonSpaceMiddle, moonViewMiddle);
+		imagesMiddle.setAlignment(Pos.CENTER);
 
 		//################# windMiddle
 
 		// windTextDayMiddle
-		Label windTextDayMiddle = new Label("T mph");
+		Label windTextDayMiddle = new Label(Day2.windSpeed.substring(0,2));
+		windTextDayMiddle.setStyle("-fx-font-size: 12; -fx-font-weight: bold;");
 		// windImageDayMiddle
 		ImageView windImageDayMiddle = new ImageView(wind);
 		windImageDayMiddle.setFitHeight(25);
 		windImageDayMiddle.setFitWidth(25);
 		windImageDayMiddle.setPreserveRatio(true);
+		// windSpaceMiddle
+		Label windSpaceMiddle = new Label("mph");
+		windSpaceMiddle.setStyle("-fx-font-size: 12;");
+		windSpaceMiddle.setMinHeight(40);
 		// windImageNightMiddle
 		ImageView windImageNightMiddle = new ImageView(wind);
 		windImageNightMiddle.setFitHeight(25);
 		windImageNightMiddle.setFitWidth(25);
 		windImageNightMiddle.setPreserveRatio(true);
 		// windTextNightMiddle
-		Label windTextNightMiddle = new Label("T mph");
+		Label windTextNightMiddle = new Label(Night2.windSpeed.substring(0,2));
+		windTextNightMiddle.setStyle("-fx-font-size: 12; -fx-font-weight: bold");
 
-		VBox windMiddle = new VBox(windTextDayMiddle, windImageDayMiddle, windImageNightMiddle, windTextNightMiddle);
+		VBox windMiddle = new VBox(5, windTextDayMiddle, windImageDayMiddle, windSpaceMiddle, windImageNightMiddle, windTextNightMiddle);
+		windMiddle.setAlignment(Pos.CENTER);
 
 		//################# Temps Middle
-		Label tempDayMiddle = new Label("T°");
-		Label tempNightMiddle = new Label("T°");
+		Label tempDayMiddle = new Label(String.valueOf(Day2.temperature) + "°F");
+		Label tempNightMiddle = new Label(String.valueOf(Night2.temperature) + "°F");
+		tempDayMiddle.setAlignment(Pos.CENTER);
+		tempNightMiddle.setAlignment(Pos.CENTER);
+		tempDayMiddle.setStyle("-fx-font-size: 48; -fx-font-weight: bold;");
+		tempNightMiddle.setStyle("-fx-font-size: 48; -fx-font-weight: bold;");
 
-		HBox detailsMiddle = new HBox(rainMiddle, imagesMiddle, windMiddle);
+		HBox detailsMiddle = new HBox(10, rainMiddle, imagesMiddle, windMiddle);
+		detailsMiddle.setPadding(new Insets(0, 10, 0, 10));
 
 		VBox panelMiddle = new VBox(tempDayMiddle, detailsMiddle, tempNightMiddle);
+		panelMiddle.setAlignment(Pos.CENTER);
+		panelMiddle.setStyle("-fx-background-color: linear-gradient(to bottom, white, gray); -fx-background-radius: 25px;");
+
+		// Actions Middle
+
+		unitsButtonMiddle.setOnAction(e -> {
+			if (isMetricMiddle) {
+				tempDayMiddle.setText(String.valueOf(Day2.temperature) + "°F");
+				tempNightMiddle.setText(String.valueOf(Night2.temperature) + "°F");
+				windTextDayMiddle.setText(Day2.windSpeed.substring(0,2));
+				windTextNightMiddle.setText(Night2.windSpeed.substring(0,2));
+				windSpaceMiddle.setText("mph");
+				isMetricMiddle = false;
+			} else {
+				double dayCelsius = (Day2.temperature - 32) * 5.0 / 9.0;
+				double dayKMH = (Integer.valueOf(Day2.windSpeed.substring(0,2)) * 1.60934);
+				double nightCelsius = (Night2.temperature - 32) * 5.0 / 9.0;
+				double nightKMH = (Integer.valueOf(Night2.windSpeed.substring(0,2)) * 1.60934);
+				tempDayMiddle.setText(String.valueOf((int)dayCelsius) + "°C");
+				tempNightMiddle.setText(String.valueOf((int)nightCelsius) + "°C");
+				windTextDayMiddle.setText(String.valueOf((int)dayKMH));
+				windTextNightMiddle.setText(String.valueOf((int)nightKMH));
+				windSpaceMiddle.setText("kmh");
+				isMetricMiddle = true;
+			}
+		});
 
 		//############################### Right Panel
 
 		//################# rainRight
 
 		// rainTextDayRight
-		Label rainTextDayRight = new Label("T%");
+		Label rainTextDayRight = new Label(String.valueOf(Day3.probabilityOfPrecipitation.value));
+		rainTextDayRight.setStyle("-fx-font-size: 12; -fx-font-weight: bold;");
 		// rainImageDayRight
 		ImageView rainImageDayRight = new ImageView(rain);
 		rainImageDayRight.setFitHeight(25);
 		rainImageDayRight.setFitWidth(25);
 		rainImageDayRight.setPreserveRatio(true);
+		// rainSpaceRight
+		Label rainSpaceRight = new Label("%");
+		rainSpaceRight.setStyle("-fx-font-size: 12; -fx-font-weight: bold;");
+		rainSpaceRight.setMinHeight(40);
 		// rainImageNightRight
 		ImageView rainImageNightRight = new ImageView(rain);
 		rainImageNightRight.setFitHeight(25);
 		rainImageNightRight.setFitWidth(25);
 		rainImageNightRight.setPreserveRatio(true);
 		// rainTextNightRight
-		Label rainTextNightRight = new Label("T%");
+		Label rainTextNightRight = new Label(String.valueOf(Night3.probabilityOfPrecipitation.value));
+		rainTextNightRight.setStyle("-fx-font-size: 12; -fx-font-weight: bold;");
 
-		VBox rainRight = new VBox(rainTextDayRight, rainImageDayRight, rainImageNightRight, rainTextNightRight);
+		VBox rainRight = new VBox(5, rainTextDayRight, rainImageDayRight, rainSpaceRight, rainImageNightRight, rainTextNightRight);
+		rainRight.setAlignment(Pos.CENTER);
 
 		//################# imagesRight
 
@@ -238,70 +337,119 @@ public class JavaFX extends Application {
 		sunViewRight.setFitHeight(50);
 		sunViewRight.setFitWidth(50);
 		sunViewRight.setPreserveRatio(true);
+		// sunSpaceRight
+		Label sunSpaceRight = new Label();
 		// unitsButtonRight
 		Button unitsButtonRight = new Button("Switch Units");
+		// moonSpaceRight
+		Label moonSpaceRight = new Label();
 		// moonViewRight
 		ImageView moonViewRight = new ImageView(moon);
 		moonViewRight.setFitHeight(50);
 		moonViewRight.setFitWidth(50);
 		moonViewRight.setPreserveRatio(true);
 
-		VBox imagesRight = new VBox(sunViewRight, unitsButtonRight, moonViewRight);
+		VBox imagesRight = new VBox(10, sunViewRight, sunSpaceRight, unitsButtonRight, moonSpaceRight, moonViewRight);
+		imagesRight.setAlignment(Pos.CENTER);
 
 		//################# windRight
 
 		// windTextDayRight
-		Label windTextDayRight = new Label("T mph");
+		Label windTextDayRight = new Label(Day3.windSpeed.substring(0,2));
+		windTextDayRight.setStyle("-fx-font-size: 12; -fx-font-weight: bold;");
 		// windImageDayRight
 		ImageView windImageDayRight = new ImageView(wind);
 		windImageDayRight.setFitHeight(25);
 		windImageDayRight.setFitWidth(25);
 		windImageDayRight.setPreserveRatio(true);
+		// windSpaceRight
+		Label windSpaceRight = new Label("mph");
+		windSpaceRight.setStyle("-fx-font-size: 12;");
+		windSpaceRight.setMinHeight(40);
 		// windImageNightRight
 		ImageView windImageNightRight = new ImageView(wind);
 		windImageNightRight.setFitHeight(25);
 		windImageNightRight.setFitWidth(25);
 		windImageNightRight.setPreserveRatio(true);
 		// windTextNightRight
-		Label windTextNightRight = new Label("T mph");
+		Label windTextNightRight = new Label(Night3.windSpeed.substring(0,2));
+		windTextNightRight.setStyle("-fx-font-size: 12; -fx-font-weight: bold");
 
-		VBox windRight = new VBox(windTextDayRight, windImageDayRight, windImageNightRight, windTextNightRight);
+		VBox windRight = new VBox(5, windTextDayRight, windImageDayRight, windSpaceRight, windImageNightRight, windTextNightRight);
+		windRight.setAlignment(Pos.CENTER);
 
-		//################# Right Temps
-		Label tempDayRight = new Label("T°");
-		Label tempNightRight = new Label("T°");
+		//################# Temps Right
+		Label tempDayRight = new Label(String.valueOf(Day3.temperature) + "°F");
+		Label tempNightRight = new Label(String.valueOf(Night3.temperature) + "°F");
+		tempDayRight.setAlignment(Pos.CENTER);
+		tempNightRight.setAlignment(Pos.CENTER);
+		tempDayRight.setStyle("-fx-font-size: 48; -fx-font-weight: bold;");
+		tempNightRight.setStyle("-fx-font-size: 48; -fx-font-weight: bold;");
 
-		HBox detailsRight = new HBox(rainRight, imagesRight, windRight);
+		HBox detailsRight = new HBox(10, rainRight, imagesRight, windRight);
+		detailsRight.setPadding(new Insets(0, 10, 0, 10));
 
 		VBox panelRight = new VBox(tempDayRight, detailsRight, tempNightRight);
+		panelRight.setAlignment(Pos.CENTER);
+		panelRight.setStyle("-fx-background-color: linear-gradient(to bottom, white, gray); -fx-background-radius: 25px;");
+
+		// Actions Right
+
+		unitsButtonRight.setOnAction(e -> {
+			if (isMetricRight) {
+				tempDayRight.setText(String.valueOf(Day3.temperature) + "°F");
+				tempNightRight.setText(String.valueOf(Night3.temperature) + "°F");
+				windTextDayRight.setText(Day3.windSpeed.substring(0,2));
+				windTextNightRight.setText(Night3.windSpeed.substring(0,2));
+				windSpaceRight.setText("mph");
+				isMetricRight = false;
+			} else {
+				double dayCelsius = (Day3.temperature - 32) * 5.0 / 9.0;
+				double dayKMH = (Integer.valueOf(Day3.windSpeed.substring(0,2)) * 1.60934);
+				double nightCelsius = (Night3.temperature - 32) * 5.0 / 9.0;
+				double nightKMH = (Integer.valueOf(Night3.windSpeed.substring(0,2)) * 1.60934);
+				tempDayRight.setText(String.valueOf((int)dayCelsius) + "°C");
+				tempNightRight.setText(String.valueOf((int)nightCelsius) + "°C");
+				windTextDayRight.setText(String.valueOf((int)dayKMH));
+				windTextNightRight.setText(String.valueOf((int)nightKMH));
+				windSpaceRight.setText("kmh");
+				isMetricRight = true;
+			}
+		});
 
 		//############################################### Bottom Pane
 
-		Label weekdayLeft = new Label("Testday");
-		Label dateLeft = new Label("T/TT");
+		Label weekdayLeft = new Label(Day1.name);
+		Label dateLeft = new Label(Day1.startTime.toString().substring(4,10));
 		weekdayLeft.setStyle("-fx-font-size: 24; -fx-font-weight: bold;");
 		dateLeft.setStyle("-fx-font-size: 24; -fx-font-weight: bold;");
 		VBox dateInfoLeft = new VBox(weekdayLeft, dateLeft);
 		dateInfoLeft.setAlignment(Pos.CENTER);
 
-		Label weekdayCenter = new Label("Testday");
-		Label dateCenter = new Label("T/TT");
+		Label spaceLeft = new Label();
+		spaceLeft.setPrefWidth(135);
+
+		Label weekdayCenter = new Label(Day2.name);
+		Label dateCenter = new Label(Day2.startTime.toString().substring(4,10));
 		weekdayCenter.setStyle("-fx-font-size: 24; -fx-font-weight: bold;");
 		dateCenter.setStyle("-fx-font-size: 24; -fx-font-weight: bold;");
 		VBox dateInfoCenter = new VBox(weekdayCenter, dateCenter);
 		dateInfoCenter.setAlignment(Pos.CENTER);
 
-		Label weekdayRight = new Label("Testday");
-		Label dateRight = new Label("T/TT");
+		Label spaceRight = new Label();
+		spaceRight.setPrefWidth(135);
+
+		Label weekdayRight = new Label(Day3.name);
+		Label dateRight = new Label(Day3.startTime.toString().substring(4,10));
 		weekdayRight.setStyle("-fx-font-size: 24; -fx-font-weight: bold;");
 		dateRight.setStyle("-fx-font-size: 24; -fx-font-weight: bold;");
 		VBox dateInfoRight = new VBox(weekdayRight, dateRight);
 		dateInfoRight.setAlignment(Pos.CENTER);
 
-		HBox Bottom = new HBox(135, dateInfoLeft, dateInfoCenter, dateInfoRight);
+		HBox Bottom = new HBox(dateInfoLeft, spaceLeft, dateInfoCenter, spaceRight, dateInfoRight);
 		Bottom.setAlignment(Pos.CENTER);
 		Bottom.setPadding(new Insets(0, 0, 20, 0));
-		Bottom.setStyle("-fx-background-color: #f7f7f7");
+		Bottom.setStyle("-fx-background-color: #f5f5f5");
 
 		// ##########################################################
 
@@ -309,7 +457,7 @@ public class JavaFX extends Application {
 		Center.setPadding(new Insets(20, 0, 10, 0));
 		Center.setAlignment(Pos.CENTER);
 		Center.setPrefWidth(Bottom.getPrefWidth());
-		Center.setStyle("-fx-background-color: white");
+		Center.setStyle("-fx-background-color: #f5f5f5");
 
 		BorderPane root = new BorderPane();
 
