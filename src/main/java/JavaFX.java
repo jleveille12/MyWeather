@@ -64,7 +64,7 @@ public class JavaFX extends Application {
 		Period Night3 = forecast.get(i+5);
 
 		//############ Load Images
-		Image sun = new Image(getClass().getResource("/images/Sun2.png").toExternalForm());
+		Image sun = new Image(getClass().getResource("/images/Sun.png").toExternalForm());
 		Image moon = new Image(getClass().getResource("/images/Moon.png").toExternalForm());
 		Image rain = new Image(getClass().getResource("/images/Rain.png").toExternalForm());
 		Image wind = new Image(getClass().getResource("/images/Wind.png").toExternalForm());
