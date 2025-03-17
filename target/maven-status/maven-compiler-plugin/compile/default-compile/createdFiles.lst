@@ -1,5 +1,5 @@
 weather/Properties.class
-Scenes/IconLoader.class
+Utils/IconLoader.class
 Scenes/TodaysWeather.class
 MyWeatherAPI.class
 Components/Navbar.class

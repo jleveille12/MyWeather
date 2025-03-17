@@ -5,9 +5,9 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
+import weather.Period;
 
 public class Navbar {
-
     private Label logo;
     private Label logoSpace;
     private Button today;
@@ -30,14 +30,14 @@ public class Navbar {
         threeDay.setMinSize(150, 30);
     }
 
-    public HBox getNavbar() {
+    public HBox getNavbar(Period Today) {
         HBox Top = new HBox(20, logo, logoSpace, today, threeDay);
         Top.setPadding(new Insets(20, 20, 20, 20));
-        Top.setStyle("-fx-background-color: linear-gradient(to right, white, orange)");
-        // Set a fixed width and height for the HBox to ensure all items are visible
-        //System.out.println("Getting navbar...");
-        Top.setMinSize(800, 100); // You can adjust this size as needed
-//        Top.setAlignment(Pos.CENTER);
+        if (Today.isDaytime) {
+            Top.setStyle("-fx-background-color: linear-gradient(to right, white, orange)");
+        } else {
+            Top.setStyle("-fx-background-color: linear-gradient(to right, white, #2e169c)");
+        }
         return Top;
     }
 

@@ -22,31 +22,28 @@ import java.util.ArrayList;
 
 public class JavaFX extends Application {
 
-	private Navbar navbar = new Navbar();
+	private final Navbar navbar = new Navbar();
 	Button todayButton = navbar.getTodayButton();
 	Button threeDayButton = navbar.getThreeDayButton();
 
 	public static void main(String[] args) {
-
 		launch(args);
 	}
 
-	private BorderPane firstScene() {
-		// First scene (Adam)
+	private BorderPane firstScene(Period Today) {
 		BorderPane mainLayout = new BorderPane();
-		TodaysWeather todaysWeatherScene = new TodaysWeather();
-		mainLayout.setTop(navbar.getNavbar());
+		TodaysWeather todaysWeatherScene = new TodaysWeather(Today);
+		mainLayout.setTop(navbar.getNavbar(Today));
 		mainLayout.setCenter(todaysWeatherScene.getLayout());
 
 		return mainLayout;
 	}
 
-	private BorderPane secondScene() {
-		ArrayList<Period> forecast = WeatherAPI.getForecast("LOT",77,70);
-		if (forecast == null || forecast.size() < 8){
-			throw new RuntimeException("Forecast did not load properly");
-		}
+	private boolean isMetricLeft = false;
+	private boolean isMetricMiddle = false;
+	private boolean isMetricRight = false;
 
+	private BorderPane secondScene(ArrayList<Period> forecast) {
 		Period Today = forecast.getFirst();
 
 		int i = 1;
@@ -69,7 +66,9 @@ public class JavaFX extends Application {
 		Image rain = new Image(getClass().getResource("/images/Rain.png").toExternalForm());
 		Image wind = new Image(getClass().getResource("/images/Wind.png").toExternalForm());
 
-		// Second scene (John)
+		//############################################### Top Pane
+		HBox Top = navbar.getNavbar(Today);
+
 		//############################################### Center Pane
 
 		//############################### Left Panel
@@ -460,39 +459,45 @@ public class JavaFX extends Application {
 		Center.setStyle("-fx-background-color: #f5f5f5");
 
 		BorderPane root = new BorderPane();
-
-		root.setTop(navbar.getNavbar());
+		root.setTop(Top);
 		root.setCenter(Center);
 		root.setBottom(Bottom);
 
 		return root;
 	}
 
+
+
 	//feel free to remove the starter code from this method
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		BorderPane mainLayoutInitialScene = this.firstScene();
+		primaryStage.setTitle("MyWeather");
+
+		ArrayList<Period> forecast = WeatherAPI.getForecast("LOT",77,70);
+		if (forecast == null || forecast.size() < 8){
+			throw new RuntimeException("Forecast did not load properly");
+		}
+
+		BorderPane mainLayoutInitialScene = this.firstScene(forecast.get(0));
 		Scene initialScene = new Scene(mainLayoutInitialScene, 800, 600);
 
-		// Set initial scene (Today's weather)
 		primaryStage.setScene(initialScene);
 		primaryStage.setTitle("Weather App");
 		primaryStage.show();
 
 		// Switch scene logic
 		todayButton.setOnAction(e -> {
-			BorderPane mainLayoutFirstScene = this.firstScene();
+			BorderPane mainLayoutFirstScene = this.firstScene(forecast.get(0));
 			Scene scene1 = new Scene(mainLayoutFirstScene, 800, 600);
 			primaryStage.setScene(scene1);
 		});
 
 		threeDayButton.setOnAction(e -> {
 			// Set up second scene (3-day forecast)
-			BorderPane mainLayoutSecondScene = this.secondScene();
+			BorderPane mainLayoutSecondScene = this.secondScene(forecast);
 			Scene scene2 = new Scene(mainLayoutSecondScene, 800, 600);
 			primaryStage.setScene(scene2);
 		});
-
 	}
 
 }

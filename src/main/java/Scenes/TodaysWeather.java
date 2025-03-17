@@ -1,78 +1,59 @@
 package Scenes;
 
+import Utils.IconLoader;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
-import javafx.scene.Parent;
 import weather.Period;
-import weather.WeatherAPI;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javafx.scene.text.Text;
 
 public class TodaysWeather {
-    private BorderPane borderPane;
-    // Declare the navbar objects
-//    private HBox navBar;
-//    private Button threeDayWeatherBtn;
-//    private Button todaysWeatherBtn;
+    // Stores all of today's weather data retrieved from API
+    private Period todaysWeather;
 
-    // Declare vbox object for vertical alignment of main content
-    private VBox mainContent;
-
-    // Declare hbox object for horizontal alignment of first row of main content
-    // Title, Today's Weather image, switch units toggle button
-    private GridPane mainContentLayout;
-    private HBox titleLine;
-    private Label todaysWeatherContentTitle;
-    private Image iconImage;
+    private final Label todaysWeatherContentTitle;
     private ImageView weatherIconImageView;
     private ToggleButton switchUnitsBtn;
 
     // Declare first row of content objects (Today's Temperature)
-    private HBox temperatureLine;
-    private Label temperatureText;
-    private Label fahrenheitText;
-    private Label celsiusText;
+    private final Label temperatureText;
+    private final Label fahrenheitText;
+    private final String tempFahrenheit;
+    private final Label celsiusText;
 
     // Declare the second row of content objects (Today's wind speed)
-    private HBox windSpeedLine;
-    private Label windSpeedText;
-    private Label mphWindSpeedText;
-    private Label kphWindSpeedText;
+    private final Label windSpeedText;
+    private final Label mphWindSpeedText;
+    private final Label kphWindSpeedText;
 
     // Declare fourth row of content object (Today's Weather precipitation probability)
-    private Label precipitationProbabilityTitle;
-    private Label precipitationProbabilityText;
+    private final Label precipitationProbabilityTitle;
+    private final Label precipitationProbabilityText;
 
     // Declare third row of content objects (Today's Weather description)
-    private Text weatherDescriptionTitle;
-    private Text weatherDescriptionText;
-
-
+    private final Text weatherDescriptionTitle;
+    private final Text weatherDescriptionText;
 
     // Construct today's weather scene layout
-    public TodaysWeather() {
-//        todaysWeatherBtn = new Button("Today's weather");
-//        threeDayWeatherBtn = new Button("Three Day weather");
+    public TodaysWeather(Period todaysForecast) {
+        todaysWeather = todaysForecast;
 
         todaysWeatherContentTitle = new Label();
         switchUnitsBtn = new ToggleButton();
 
         temperatureText = new Label();
         fahrenheitText = new Label();
+        tempFahrenheit = String.valueOf(todaysForecast.temperature);
         celsiusText = new Label();
 
         windSpeedText = new Label();
@@ -84,18 +65,6 @@ public class TodaysWeather {
 
         precipitationProbabilityTitle = new Label();
         precipitationProbabilityText = new Label();
-    }
-
-    // Retrieves the weather data from the WeatherAPI.
-    // Calls the updateWeather function to update
-    // the weather data objects.
-    public void loadWeatherData() {
-        ArrayList<Period> forecast = WeatherAPI.getForecast("LOT", 77, 70);
-        if (forecast == null || forecast.isEmpty()) {
-            throw new RuntimeException("Forecast did not load");
-        }
-
-        this.updateWeather(forecast.get(0).temperature, forecast.get(0).shortForecast, forecast.get(0).detailedForecast, forecast.get(0).windSpeed, String.valueOf(forecast.get(0).probabilityOfPrecipitation.value));
     }
 
     // Converts the mph wind speed range to kph wind speed range
@@ -118,17 +87,16 @@ public class TodaysWeather {
             int kph = (int) Math.round(mph * 1.60934);
             speedsInKph.add(kph);
         }
-
         return speedsInKph;
     }
 
     // Updates the weather data objects which represent the main content on the today's weather scene.
-    public void updateWeather(Integer tempFahrenheit, String sortForecast, String detailedForecast, String mphWindSpeedRange, String precipitationProb) {
-
+    public void setWeatherData() {
         todaysWeatherContentTitle.setText("Today's Weather");
         todaysWeatherContentTitle.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
+        System.out.println(todaysWeather.shortForecast);
         // Retrieves weather icon from IconLoader class
-        weatherIconImageView = IconLoader.getWeatherIcon(sortForecast);
+        weatherIconImageView = IconLoader.getWeatherIcon(todaysWeather.shortForecast);
 
         // Create the toggle units button
         switchUnitsBtn = new ToggleButton("Toggle Units");
@@ -139,12 +107,12 @@ public class TodaysWeather {
         temperatureText.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
 
         // Initially disable showing the Celsius text
-        Integer tempCelsius = (tempFahrenheit - 32) * 5 / 9;
+        Integer tempCelsius = (todaysWeather.temperature - 32) * 5 / 9;
         String tempCelsiusText = String.valueOf(tempCelsius);
         celsiusText.setText(tempCelsiusText + "°C");
         celsiusText.setDisable(true);
 
-        // Initially show the Fahrenheit units
+        // Initially show Fahrenheit
         String tempFahrenheitText = String.valueOf(tempFahrenheit);
         fahrenheitText.setText(tempFahrenheitText + "°F ");
 
@@ -152,21 +120,16 @@ public class TodaysWeather {
         windSpeedText.setText("Wind speed: ");
         windSpeedText.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
 
-        // Since speed is passed in as range (e.g "20 to 30 mph")
-        // we need to first parse the string in order to convert to kph
-        ArrayList<Integer> convertedSpeedRange = convertMphToKphRange(mphWindSpeedRange);
-
+        // Initially show mph
+        mphWindSpeedText.setText(todaysWeather.windSpeed + " ");
+        ArrayList<Integer> convertedSpeedRange = convertMphToKphRange(todaysWeather.windSpeed);
         String kphWindSpeed = "";
         if (convertedSpeedRange.size() == 2) {
             kphWindSpeed = String.valueOf(convertedSpeedRange.get(0)) + " to " + String.valueOf(convertedSpeedRange.get(1));
         } else {
             kphWindSpeed = String.valueOf(convertedSpeedRange.get(0));
         }
-
-        // Initially show the mph units
-        mphWindSpeedText.setText(mphWindSpeedRange + " ");
-
-        // Initially disable showing the km/h speed
+        // Initially disable showing the kph speed
         kphWindSpeedText.setText(kphWindSpeed + "km/h");
         kphWindSpeedText.setDisable(true);
 
@@ -198,24 +161,18 @@ public class TodaysWeather {
         // Set the precipitation for today's weather
         precipitationProbabilityTitle.setText("Precipitation: ");
         precipitationProbabilityTitle.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
-        precipitationProbabilityText.setText(precipitationProb + "%");
+        precipitationProbabilityText.setText(String.valueOf(todaysWeather.probabilityOfPrecipitation.value) + "%");
 
         // Set the description for today's weather
         weatherDescriptionTitle.setText("Description: ");
         weatherDescriptionTitle.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
-        weatherDescriptionText.setText(detailedForecast);
-
+        weatherDescriptionText.setText(todaysWeather.detailedForecast);
     }
 
     public GridPane getLayout() {
-//        borderPane = new BorderPane();
-        loadWeatherData();
-
-//        navBar = new HBox(20, todaysWeatherBtn, threeDayWeatherBtn);
-//        navBar.setStyle("-fx-padding: 10px; -fx-alignment: center-right;");
-//        borderPane.setTop(navBar);
-
-        mainContentLayout = new GridPane();
+        this.setWeatherData();
+        // Title, Today's Weather image, switch units toggle button
+        GridPane mainContentLayout = new GridPane();
         // Add vertical spacing between rows
         mainContentLayout.setVgap(10);
 
@@ -270,8 +227,6 @@ public class TodaysWeather {
         mainContentLayout.add(weatherDescriptionText, 1, 8, 3, 1);
 
         mainContentLayout.setStyle("-fx-padding: 20px; -fx-alignment: top-center;");
-
-        //borderPane.setCenter(mainContentLayout);
 
         return mainContentLayout;
     }
