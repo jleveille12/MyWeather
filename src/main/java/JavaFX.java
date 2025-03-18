@@ -466,8 +466,6 @@ public class JavaFX extends Application {
 		return root;
 	}
 
-
-
 	//feel free to remove the starter code from this method
 	@Override
 	public void start(Stage primaryStage) throws Exception {
@@ -484,11 +482,14 @@ public class JavaFX extends Application {
 		primaryStage.setScene(initialScene);
 		primaryStage.setTitle("Weather App");
 		primaryStage.show();
+		todayButton.setDisable(true);
 
 		// Switch scene logic
 		todayButton.setOnAction(e -> {
 			BorderPane mainLayoutFirstScene = this.firstScene(forecast.get(0));
 			Scene scene1 = new Scene(mainLayoutFirstScene, 800, 600);
+			todayButton.setDisable(true);
+			threeDayButton.setDisable(false);
 			primaryStage.setScene(scene1);
 		});
 
@@ -496,6 +497,8 @@ public class JavaFX extends Application {
 			// Set up second scene (3-day forecast)
 			BorderPane mainLayoutSecondScene = this.secondScene(forecast);
 			Scene scene2 = new Scene(mainLayoutSecondScene, 800, 600);
+			threeDayButton.setDisable(true);
+			todayButton.setDisable(false);
 			primaryStage.setScene(scene2);
 		});
 	}

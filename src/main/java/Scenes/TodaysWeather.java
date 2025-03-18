@@ -9,6 +9,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import weather.Period;
 
 import java.util.ArrayList;
@@ -16,6 +17,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javafx.scene.text.Text;
+import weather.WeatherAPI;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class TodaysWeather {
     // Stores all of today's weather data retrieved from API
@@ -28,7 +33,6 @@ public class TodaysWeather {
     // Declare first row of content objects (Today's Temperature)
     private final Label temperatureText;
     private final Label fahrenheitText;
-    private final String tempFahrenheit;
     private final Label celsiusText;
 
     // Declare the second row of content objects (Today's wind speed)
@@ -44,8 +48,25 @@ public class TodaysWeather {
     private final Text weatherDescriptionTitle;
     private final Text weatherDescriptionText;
 
+    private ArrayList<PeriodHourly> hourlyWeather;
+
+    private ArrayList<ImageView> hourlyIconList;
+    private ArrayList<Text> hourlyTempList;
+    private ArrayList<Text> hourlyTimeList;
+    private final Integer TIME_INTERVAL = 12;
+
     // Construct today's weather scene layout
     public TodaysWeather(Period todaysForecast) {
+        ArrayList<PeriodHourly> hourlyForecast = MyWeatherAPI.getHourlyForecast("LOT",77,70);
+        if (hourlyForecast == null || hourlyForecast.size() < 10){
+            throw new RuntimeException("Hourly forecast did not load properly");
+        }
+
+        hourlyWeather = hourlyForecast;
+        // Continue implementing here (HOURLY FORECAST)
+
+        //System.out.println(hourlyForecast);
+
         todaysWeather = todaysForecast;
 
         todaysWeatherContentTitle = new Label();
@@ -53,7 +74,6 @@ public class TodaysWeather {
 
         temperatureText = new Label();
         fahrenheitText = new Label();
-        tempFahrenheit = String.valueOf(todaysForecast.temperature);
         celsiusText = new Label();
 
         windSpeedText = new Label();
@@ -65,6 +85,10 @@ public class TodaysWeather {
 
         precipitationProbabilityTitle = new Label();
         precipitationProbabilityText = new Label();
+
+        hourlyIconList = new ArrayList<>();
+        hourlyTempList = new ArrayList<>();
+        hourlyTimeList = new ArrayList<>();
     }
 
     // Converts the mph wind speed range to kph wind speed range
@@ -92,8 +116,8 @@ public class TodaysWeather {
 
     // Updates the weather data objects which represent the main content on the today's weather scene.
     public void setWeatherData() {
-        todaysWeatherContentTitle.setText("Today's Weather");
-        todaysWeatherContentTitle.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
+        todaysWeatherContentTitle.setText("Chicago, IL");
+        todaysWeatherContentTitle.setStyle("-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: black;");
         System.out.println(todaysWeather.shortForecast);
         // Retrieves weather icon from IconLoader class
         weatherIconImageView = IconLoader.getWeatherIcon(todaysWeather.shortForecast);
@@ -113,7 +137,7 @@ public class TodaysWeather {
         celsiusText.setDisable(true);
 
         // Initially show Fahrenheit
-        String tempFahrenheitText = String.valueOf(tempFahrenheit);
+        String tempFahrenheitText = String.valueOf(todaysWeather.temperature);
         fahrenheitText.setText(tempFahrenheitText + "°F ");
 
         // Set the wind speed text
@@ -130,7 +154,7 @@ public class TodaysWeather {
             kphWindSpeed = String.valueOf(convertedSpeedRange.get(0));
         }
         // Initially disable showing the kph speed
-        kphWindSpeedText.setText(kphWindSpeed + "km/h");
+        kphWindSpeedText.setText(kphWindSpeed + " km/h");
         kphWindSpeedText.setDisable(true);
 
         // Toggle the units when switch units button is clicked
@@ -167,6 +191,29 @@ public class TodaysWeather {
         weatherDescriptionTitle.setText("Description: ");
         weatherDescriptionTitle.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
         weatherDescriptionText.setText(todaysWeather.detailedForecast);
+
+        // Set up the hourly forecast for 12 hour period
+        for (int i = 0; i < TIME_INTERVAL; i++) {
+            ImageView hourlyIcon = Scenes.IconLoader.getWeatherIcon(hourlyWeather.get(i).shortForecast);
+            hourlyIcon.setFitHeight(20);
+            hourlyIcon.setFitWidth(20);
+            hourlyIcon.setPreserveRatio(true);
+
+            //Date startHour = new Date();
+            SimpleDateFormat formatter = new SimpleDateFormat("HH a");
+            String timeOnly = formatter.format(hourlyWeather.get(i).startTime);
+            Text hourlyTime = new Text();
+            if (timeOnly.startsWith("0"))  {
+                hourlyTime.setText(timeOnly.substring(1));
+            } else {
+                hourlyTime.setText(timeOnly);
+            }
+            Text hourlyTemp = new Text(String.valueOf(hourlyWeather.get(i).temperature));
+
+            hourlyIconList.add(hourlyIcon);
+            hourlyTimeList.add(hourlyTime);
+            hourlyTempList.add(hourlyTemp);
+        }
     }
 
     public GridPane getLayout() {
@@ -225,6 +272,20 @@ public class TodaysWeather {
 
         weatherDescriptionText.setWrappingWidth(300);
         mainContentLayout.add(weatherDescriptionText, 1, 8, 3, 1);
+
+        Separator sep5 = new Separator();
+        sep5.setStyle("-fx-background-color: #000000;");
+        mainContentLayout.add(sep5, 0, 9, 3, 1);
+
+        GridPane hourlyLayout = new GridPane();
+        hourlyLayout.setMaxWidth(500);
+
+        for (int i = 0; i < TIME_INTERVAL; i++) {
+            VBox hourlyContentSquare = new VBox(hourlyIconList.get(i), hourlyTempList.get(i), hourlyTimeList.get(i));
+            hourlyLayout.add(hourlyContentSquare, i, 0, 1, 1);
+        }
+
+        mainContentLayout.add(hourlyLayout, 0, 10, 3, 1);
 
         mainContentLayout.setStyle("-fx-padding: 20px; -fx-alignment: top-center;");
 

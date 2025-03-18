@@ -1,0 +1,30 @@
+# Ignore Maven target directory (compiled files)
+target/
+
+# Ignore IntelliJ IDEA / Eclipse / VS Code / NetBeans IDE settings
+.idea/
+.vscode/
+*.iml
+*.classpath
+*.project
+*.settings/
+
+# Ignore OS-specific files
+.DS_Store
+Thumbs.db
+
+# Ignore build output
+out/
+bin/
+
+# Ignore logs and temporary files
+logs/
+*.log
+*.tmp
+
+# Ignore compiled Java classes
+*.class
+
+# Ignore dependency caching
+.m2/
+.gradle/

@@ -1,4 +1,6 @@
 package Scenes;
 
-public class ProbabilityOfPrecipitation {
+public class ProbabilityOfPrecipitationHourly {
+    public String unitCode;
+    public int value;
 }

@@ -1,6 +1,6 @@
 package Scenes;
 
-public class DewpointHourly {
+public class Dewpoint {
     public String unitCode;
-    public int value;
+    public double value;
 }

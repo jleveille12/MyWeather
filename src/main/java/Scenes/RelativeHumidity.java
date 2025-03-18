@@ -1,6 +1,6 @@
 package Scenes;
 
-public class RelativeHumidityHourly {
+public class RelativeHumidity {
     public String unitCode;
     public int value;
 }
