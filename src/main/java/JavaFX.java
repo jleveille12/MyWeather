@@ -174,9 +174,20 @@ public class JavaFX extends Application {
 				isMetricLeft = false;
 			} else {
 				double dayCelsius = (Day1.temperature - 32) * 5.0 / 9.0;
-				double dayKMH = (Integer.valueOf(Day1.windSpeed.substring(0,2)) * 1.60934);
+				int windDigits;
+				if (Day1.windSpeed.charAt(1) == ' ') {
+					windDigits = 1;
+				} else {
+					windDigits = 2;
+				}
+				double dayKMH = (Integer.valueOf(Day1.windSpeed.substring(0,windDigits)) * 1.60934);
 				double nightCelsius = (Night1.temperature - 32) * 5.0 / 9.0;
-				double nightKMH = (Integer.valueOf(Night1.windSpeed.substring(0,2)) * 1.60934);
+				if (Night1.windSpeed.charAt(1) == ' ') {
+					windDigits = 1;
+				} else {
+					windDigits = 2;
+				}
+				double nightKMH = (Integer.valueOf(Night1.windSpeed.substring(0,windDigits)) * 1.60934);
 				tempDayLeft.setText(String.valueOf((int)dayCelsius) + "°C");
 				tempNightLeft.setText(String.valueOf((int)nightCelsius) + "°C");
 				windTextDayLeft.setText(String.valueOf((int)dayKMH));
@@ -289,9 +300,20 @@ public class JavaFX extends Application {
 				isMetricMiddle = false;
 			} else {
 				double dayCelsius = (Day2.temperature - 32) * 5.0 / 9.0;
-				double dayKMH = (Integer.valueOf(Day2.windSpeed.substring(0,2)) * 1.60934);
+				int windDigits;
+				if (Day2.windSpeed.charAt(1) == ' ') {
+					windDigits = 1;
+				} else {
+					windDigits = 2;
+				}
+				double dayKMH = (Integer.valueOf(Day2.windSpeed.substring(0,windDigits)) * 1.60934);
 				double nightCelsius = (Night2.temperature - 32) * 5.0 / 9.0;
-				double nightKMH = (Integer.valueOf(Night2.windSpeed.substring(0,2)) * 1.60934);
+				if (Night2.windSpeed.charAt(1) == ' ') {
+					windDigits = 1;
+				} else {
+					windDigits = 2;
+				}
+				double nightKMH = (Integer.valueOf(Night2.windSpeed.substring(0,windDigits)) * 1.60934);
 				tempDayMiddle.setText(String.valueOf((int)dayCelsius) + "°C");
 				tempNightMiddle.setText(String.valueOf((int)nightCelsius) + "°C");
 				windTextDayMiddle.setText(String.valueOf((int)dayKMH));
@@ -404,9 +426,20 @@ public class JavaFX extends Application {
 				isMetricRight = false;
 			} else {
 				double dayCelsius = (Day3.temperature - 32) * 5.0 / 9.0;
-				double dayKMH = (Integer.valueOf(Day3.windSpeed.substring(0,2)) * 1.60934);
+				int windDigits;
+				if (Day3.windSpeed.charAt(1) == ' ') {
+					windDigits = 1;
+				} else {
+					windDigits = 2;
+				}
+				double dayKMH = (Integer.valueOf(Day3.windSpeed.substring(0,windDigits)) * 1.60934);
 				double nightCelsius = (Night3.temperature - 32) * 5.0 / 9.0;
-				double nightKMH = (Integer.valueOf(Night3.windSpeed.substring(0,2)) * 1.60934);
+				if (Night3.windSpeed.charAt(1) == ' ') {
+					windDigits = 1;
+				} else {
+					windDigits = 2;
+				}
+				double nightKMH = (Integer.valueOf(Night3.windSpeed.substring(0,windDigits)) * 1.60934);
 				tempDayRight.setText(String.valueOf((int)dayCelsius) + "°C");
 				tempNightRight.setText(String.valueOf((int)nightCelsius) + "°C");
 				windTextDayRight.setText(String.valueOf((int)dayKMH));

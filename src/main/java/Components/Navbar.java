@@ -23,9 +23,9 @@ public class Navbar {
 
         // Scene Buttons
         today = new Button("Today's Weather");
-        today.setStyle("-fx-font-size: 12; -fx-font-weight: bold; -fx-background-color: linear-gradient(to right, white, #9985ff); -fx-background-radius: 8px;");
+        today.setStyle("-fx-font-size: 12; -fx-font-weight: bold;");
         threeDay = new Button("3-Day Forecast");
-        threeDay.setStyle("-fx-font-size: 12; -fx-font-weight: bold; -fx-background-color: linear-gradient(to right, white, #9985ff); -fx-background-radius: 8px;");
+        threeDay.setStyle("-fx-font-size: 12; -fx-font-weight: bold;");
         today.setMinSize(150, 30);
         threeDay.setMinSize(150, 30);
     }
