@@ -39,11 +39,13 @@ public class JavaFX extends Application {
 		return mainLayout;
 	}
 
+	// booleans for panel unit switching
 	private boolean isMetricLeft = false;
 	private boolean isMetricMiddle = false;
 	private boolean isMetricRight = false;
 
 	private BorderPane secondScene(ArrayList<Period> forecast) {
+
 		Period Today = forecast.getFirst();
 
 		int i = 1;
@@ -51,12 +53,15 @@ public class JavaFX extends Application {
 			i++;
 		}
 
+		// get weather info for tomorrow
 		Period Day1 = forecast.get(i);
 		Period Night1 = forecast.get(i+1);
 
+		// get weather info for day after tomorrow
 		Period Day2 = forecast.get(i+2);
 		Period Night2 = forecast.get(i+3);
 
+		// get weather info for 2 days after tomorrow
 		Period Day3 = forecast.get(i+4);
 		Period Night3 = forecast.get(i+5);
 
@@ -158,12 +163,12 @@ public class JavaFX extends Application {
 		HBox detailsLeft = new HBox(10, rainLeft, imagesLeft, windLeft);
 		detailsLeft.setPadding(new Insets(0, 10, 0, 10));
 
+		// Left panel VBox
 		VBox panelLeft = new VBox(tempDayLeft, detailsLeft, tempNightLeft);
 		panelLeft.setAlignment(Pos.CENTER);
 		panelLeft.setStyle("-fx-background-color: linear-gradient(to bottom, white, gray); -fx-background-radius: 25px;");
 
 		// Actions Left
-
 		unitsButtonLeft.setOnAction(e -> {
 			if (isMetricLeft) {
 				tempDayLeft.setText(String.valueOf(Day1.temperature) + "°F");
@@ -284,12 +289,12 @@ public class JavaFX extends Application {
 		HBox detailsMiddle = new HBox(10, rainMiddle, imagesMiddle, windMiddle);
 		detailsMiddle.setPadding(new Insets(0, 10, 0, 10));
 
+		// Middle panel VBox
 		VBox panelMiddle = new VBox(tempDayMiddle, detailsMiddle, tempNightMiddle);
 		panelMiddle.setAlignment(Pos.CENTER);
 		panelMiddle.setStyle("-fx-background-color: linear-gradient(to bottom, white, gray); -fx-background-radius: 25px;");
 
 		// Actions Middle
-
 		unitsButtonMiddle.setOnAction(e -> {
 			if (isMetricMiddle) {
 				tempDayMiddle.setText(String.valueOf(Day2.temperature) + "°F");
@@ -410,12 +415,12 @@ public class JavaFX extends Application {
 		HBox detailsRight = new HBox(10, rainRight, imagesRight, windRight);
 		detailsRight.setPadding(new Insets(0, 10, 0, 10));
 
+		// Right panel VBox
 		VBox panelRight = new VBox(tempDayRight, detailsRight, tempNightRight);
 		panelRight.setAlignment(Pos.CENTER);
 		panelRight.setStyle("-fx-background-color: linear-gradient(to bottom, white, gray); -fx-background-radius: 25px;");
 
 		// Actions Right
-
 		unitsButtonRight.setOnAction(e -> {
 			if (isMetricRight) {
 				tempDayRight.setText(String.valueOf(Day3.temperature) + "°F");
@@ -451,40 +456,45 @@ public class JavaFX extends Application {
 
 		//############################################### Bottom Pane
 
+		// Left date info
 		Label weekdayLeft = new Label(Day1.name);
 		Label dateLeft = new Label(Day1.startTime.toString().substring(4,10));
 		weekdayLeft.setStyle("-fx-font-size: 24; -fx-font-weight: bold;");
 		dateLeft.setStyle("-fx-font-size: 24; -fx-font-weight: bold;");
 		VBox dateInfoLeft = new VBox(weekdayLeft, dateLeft);
 		dateInfoLeft.setAlignment(Pos.CENTER);
+		dateInfoLeft.setMinWidth(252);
+		dateInfoLeft.setMaxWidth(252);
 
-		Label spaceLeft = new Label();
-		spaceLeft.setPrefWidth(135);
-
+		// Middle date info
 		Label weekdayCenter = new Label(Day2.name);
 		Label dateCenter = new Label(Day2.startTime.toString().substring(4,10));
 		weekdayCenter.setStyle("-fx-font-size: 24; -fx-font-weight: bold;");
 		dateCenter.setStyle("-fx-font-size: 24; -fx-font-weight: bold;");
 		VBox dateInfoCenter = new VBox(weekdayCenter, dateCenter);
 		dateInfoCenter.setAlignment(Pos.CENTER);
+		dateInfoCenter.setMinWidth(252);
+		dateInfoCenter.setMaxWidth(252);
 
-		Label spaceRight = new Label();
-		spaceRight.setPrefWidth(135);
-
+		// Right date info
 		Label weekdayRight = new Label(Day3.name);
 		Label dateRight = new Label(Day3.startTime.toString().substring(4,10));
 		weekdayRight.setStyle("-fx-font-size: 24; -fx-font-weight: bold;");
 		dateRight.setStyle("-fx-font-size: 24; -fx-font-weight: bold;");
 		VBox dateInfoRight = new VBox(weekdayRight, dateRight);
 		dateInfoRight.setAlignment(Pos.CENTER);
+		dateInfoRight.setMinWidth(252);
+		dateInfoRight.setMaxWidth(252);
 
-		HBox Bottom = new HBox(dateInfoLeft, spaceLeft, dateInfoCenter, spaceRight, dateInfoRight);
+		// Bottom HBox
+		HBox Bottom = new HBox(dateInfoLeft, dateInfoCenter, dateInfoRight);
 		Bottom.setAlignment(Pos.CENTER);
 		Bottom.setPadding(new Insets(0, 0, 20, 0));
 		Bottom.setStyle("-fx-background-color: #f5f5f5");
 
 		// ##########################################################
 
+		// Center HBox
 		HBox Center = new HBox(80, panelLeft, panelMiddle, panelRight);
 		Center.setPadding(new Insets(20, 0, 10, 0));
 		Center.setAlignment(Pos.CENTER);
