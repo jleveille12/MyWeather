@@ -120,10 +120,10 @@ public class TodaysWeather {
 
         // Create the toggle units button
         switchUnitsBtn = new ToggleButton("Toggle Units");
-        switchUnitsBtn.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;");
+        switchUnitsBtn.setStyle("-fx-background-color: gray; -fx-text-fill: white;");
 
         // Set the temperature text
-        temperatureText.setText("Today's Temperature: ");
+        temperatureText.setText("Temperature: ");
         temperatureText.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
 
         // Initially disable showing the Celsius text
@@ -137,7 +137,7 @@ public class TodaysWeather {
         fahrenheitText.setText(tempFahrenheitText + "°F ");
 
         // Set the wind speed text
-        windSpeedText.setText("Today's Wind speed: ");
+        windSpeedText.setText("Wind speed: ");
         windSpeedText.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
 
         // Initially show mph
@@ -154,7 +154,7 @@ public class TodaysWeather {
         kphWindSpeedText.setDisable(true);
 
         // Set the precipitation for today's weather
-        precipitationProbabilityTitle.setText("Today's Precipitation: ");
+        precipitationProbabilityTitle.setText("Precipitation: ");
         precipitationProbabilityTitle.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
         precipitationProbabilityText.setText(String.valueOf(todaysWeather.probabilityOfPrecipitation.value) + "%");
 
