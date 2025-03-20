@@ -22,9 +22,9 @@ public class Navbar {
 
         // Scene Buttons
         today = new Button("Today's Weather");
-        today.setStyle("-fx-font-size: 12; -fx-font-weight: bold;");
+        today.setStyle("-fx-font-size: 12; -fx-font-weight: bold; -fx-background-radius: 25; -fx-background-color: gray; -fx-text-fill: white;");
         threeDay = new Button("3-Day Forecast");
-        threeDay.setStyle("-fx-font-size: 12; -fx-font-weight: bold;");
+        threeDay.setStyle("-fx-font-size: 12; -fx-font-weight: bold; -fx-background-radius: 25; -fx-background-color: gray; -fx-text-fill: white;");
         today.setMinSize(150, 30);
         threeDay.setMinSize(150, 30);
     }

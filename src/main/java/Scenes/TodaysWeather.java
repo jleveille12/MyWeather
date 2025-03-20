@@ -325,7 +325,7 @@ public class TodaysWeather {
         mainContentLayout.setMaxHeight(440);
 
         StackPane backgroundWrapper = new StackPane(mainContentLayout);
-        backgroundWrapper.setStyle("-fx-padding: 15px;");
+        backgroundWrapper.setStyle("-fx-padding: 40px;");
         backgroundWrapper.setAlignment(Pos.CENTER);
         return backgroundWrapper;
     }
