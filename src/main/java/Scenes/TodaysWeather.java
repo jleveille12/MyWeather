@@ -1,15 +1,15 @@
 package Scenes;
 
+import ExtendedMyWeatherAPI.MyWeatherAPI;
+import ExtendedMyWeatherAPI.PeriodHourly;
 import Utils.IconLoader;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import weather.Period;
 
 import java.util.ArrayList;
@@ -17,10 +17,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javafx.scene.text.Text;
-import weather.WeatherAPI;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class TodaysWeather {
     // Stores all of today's weather data retrieved from API
@@ -53,6 +51,7 @@ public class TodaysWeather {
     private ArrayList<ImageView> hourlyIconList;
     private ArrayList<Text> hourlyTempList;
     private ArrayList<Text> hourlyTimeList;
+    // Hourly forecast period
     private final Integer TIME_INTERVAL = 12;
 
     // Construct today's weather scene layout
@@ -63,9 +62,6 @@ public class TodaysWeather {
         }
 
         hourlyWeather = hourlyForecast;
-        // Continue implementing here (HOURLY FORECAST)
-
-        //System.out.println(hourlyForecast);
 
         todaysWeather = todaysForecast;
 
@@ -118,7 +114,7 @@ public class TodaysWeather {
     public void setWeatherData() {
         todaysWeatherContentTitle.setText("Chicago, IL");
         todaysWeatherContentTitle.setStyle("-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: black;");
-        System.out.println(todaysWeather.shortForecast);
+
         // Retrieves weather icon from IconLoader class
         weatherIconImageView = IconLoader.getWeatherIcon(todaysWeather.shortForecast);
 
@@ -127,7 +123,7 @@ public class TodaysWeather {
         switchUnitsBtn.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;");
 
         // Set the temperature text
-        temperatureText.setText("Temperature: ");
+        temperatureText.setText("Today's Temperature: ");
         temperatureText.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
 
         // Initially disable showing the Celsius text
@@ -141,7 +137,7 @@ public class TodaysWeather {
         fahrenheitText.setText(tempFahrenheitText + "°F ");
 
         // Set the wind speed text
-        windSpeedText.setText("Wind speed: ");
+        windSpeedText.setText("Today's Wind speed: ");
         windSpeedText.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
 
         // Initially show mph
@@ -157,33 +153,8 @@ public class TodaysWeather {
         kphWindSpeedText.setText(kphWindSpeed + " km/h");
         kphWindSpeedText.setDisable(true);
 
-        // Toggle the units when switch units button is clicked
-        switchUnitsBtn.setOnAction(e -> {
-            if (switchUnitsBtn.isSelected()) {
-                // Disable fahrenheit
-                fahrenheitText.setDisable(true);
-                // Enable celsius
-                celsiusText.setDisable(false);
-
-                // Disable mph
-                mphWindSpeedText.setDisable(true);
-                // Enable kmp
-                kphWindSpeedText.setDisable(false);
-            } else {
-                // Disable celsius
-                celsiusText.setDisable(true);
-                // Enable fahrenheit
-                fahrenheitText.setDisable(false);
-
-                // Disable kph
-                kphWindSpeedText.setDisable(true);
-                // Enable mph
-                mphWindSpeedText.setDisable(false);
-            }
-        });
-
         // Set the precipitation for today's weather
-        precipitationProbabilityTitle.setText("Precipitation: ");
+        precipitationProbabilityTitle.setText("Today's Precipitation: ");
         precipitationProbabilityTitle.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
         precipitationProbabilityText.setText(String.valueOf(todaysWeather.probabilityOfPrecipitation.value) + "%");
 
@@ -194,34 +165,93 @@ public class TodaysWeather {
 
         // Set up the hourly forecast for 12 hour period
         for (int i = 0; i < TIME_INTERVAL; i++) {
-            ImageView hourlyIcon = Scenes.IconLoader.getWeatherIcon(hourlyWeather.get(i).shortForecast);
+            ImageView hourlyIcon = IconLoader.getWeatherIcon(hourlyWeather.get(i).shortForecast);
             hourlyIcon.setFitHeight(20);
             hourlyIcon.setFitWidth(20);
             hourlyIcon.setPreserveRatio(true);
 
-            //Date startHour = new Date();
             SimpleDateFormat formatter = new SimpleDateFormat("HH a");
             String timeOnly = formatter.format(hourlyWeather.get(i).startTime);
             Text hourlyTime = new Text();
-            if (timeOnly.startsWith("0"))  {
+
+            if (timeOnly.equals("00 AM")) {
+                hourlyTime.setText("12 AM");
+            } else if (timeOnly.startsWith("0"))  {
                 hourlyTime.setText(timeOnly.substring(1));
+            } else if (Integer.parseInt(timeOnly.substring(0, 2)) > 12){
+                String pmTime = String.valueOf(Integer.parseInt(timeOnly.substring(0, 2)) - 12);
+                hourlyTime.setText(pmTime + " PM");
             } else {
                 hourlyTime.setText(timeOnly);
             }
-            Text hourlyTemp = new Text(String.valueOf(hourlyWeather.get(i).temperature));
+
+            Text hourlyTemp = new Text(String.valueOf(hourlyWeather.get(i).temperature) + "°F");
 
             hourlyIconList.add(hourlyIcon);
             hourlyTimeList.add(hourlyTime);
             hourlyTempList.add(hourlyTemp);
         }
+
+        // Toggle the units when the switch units button is clicked
+        switchUnitsBtn.setOnAction(e -> {
+            if (switchUnitsBtn.isSelected()) {
+                // Change hourly temp units
+                for (int i = 0; i < TIME_INTERVAL; i++) {
+                    Integer tempHourlyCelsius = (hourlyWeather.get(i).temperature - 32) * 5 / 9;
+                    String tempHourlyCelsiusText = String.valueOf(tempHourlyCelsius);
+                    hourlyTempList.get(i).setText(tempHourlyCelsiusText + "°C");
+                }
+                // Disable fahrenheit
+                fahrenheitText.setDisable(true);
+                // Enable celsius
+                celsiusText.setDisable(false);
+
+                // Disable mph
+                mphWindSpeedText.setDisable(true);
+                // Enable kmp
+                kphWindSpeedText.setDisable(false);
+            } else {
+                for (int i = 0; i < TIME_INTERVAL; i++) {
+                    hourlyTempList.get(i).setText(String.valueOf(hourlyWeather.get(i).temperature) + "°F");
+                }
+                celsiusText.setDisable(true);
+                fahrenheitText.setDisable(false);
+
+                kphWindSpeedText.setDisable(true);
+                mphWindSpeedText.setDisable(false);
+            }
+        });
     }
 
-    public GridPane getLayout() {
+    public StackPane getLayout() {
         this.setWeatherData();
         // Title, Today's Weather image, switch units toggle button
         GridPane mainContentLayout = new GridPane();
         // Add vertical spacing between rows
         mainContentLayout.setVgap(10);
+
+        // Set up column constraints
+        ColumnConstraints col1 = new ColumnConstraints();
+        // Set the first column to take up 20% of the total width of mainContentLayout
+        col1.setPercentWidth(22);
+        col1.setHgrow(Priority.ALWAYS);
+        ColumnConstraints col2 = new ColumnConstraints();
+        col2.setPercentWidth(22);
+        col2.setHgrow(Priority.ALWAYS);
+        ColumnConstraints col3 = new ColumnConstraints();
+        col3.setPercentWidth(26);
+        col3.setHgrow(Priority.ALWAYS);
+        mainContentLayout.getColumnConstraints().addAll(col1, col2, col3);
+
+        // Define row constraints
+        for (int i = 0; i < 8; i++) {
+            RowConstraints row = new RowConstraints();
+            row.setMaxHeight(15);
+            row.setMinHeight(5);
+            // Expand rows to fit vertical layout
+            row.setVgrow(Priority.ALWAYS);
+            mainContentLayout.getRowConstraints().add(row);
+        }
 
         // Title, Icon, switch units button row
         mainContentLayout.add(todaysWeatherContentTitle, 0, 0, 1, 1);
@@ -230,14 +260,15 @@ public class TodaysWeather {
         // Vertically align with the bottom of the weather icon
         GridPane.setValignment(todaysWeatherContentTitle, VPos.BOTTOM);
         mainContentLayout.add(weatherIconImageView, 1, 0, 1, 1);
+        GridPane.setValignment(weatherIconImageView, VPos.CENTER);
         mainContentLayout.add(switchUnitsBtn, 2, 0, 1, 1);
         // Vertically align with the bottom of the weather icon
         GridPane.setValignment(switchUnitsBtn, VPos.BOTTOM);
 
         // Set margin for each element to add space around them
-        GridPane.setMargin(todaysWeatherContentTitle, new Insets(0, 10, 0, 0));  // Right margin 10px
-        GridPane.setMargin(weatherIconImageView, new Insets(0, 50, 0, 0));      // Right margin 40px
-        GridPane.setMargin(switchUnitsBtn, new Insets(0, 0, 0, 100));          // Left margin 20px
+        GridPane.setMargin(todaysWeatherContentTitle, new Insets(0, 10, 0, 0)); // Right 10px
+        GridPane.setMargin(weatherIconImageView, new Insets(0, 50, 20, 0));   // Right 50px bottom 20px
+        GridPane.setMargin(switchUnitsBtn, new Insets(0, 0, 0, 100)); // Left 100px
 
         // Create seperator between row
         Separator sep1 = new Separator();
@@ -277,18 +308,25 @@ public class TodaysWeather {
         sep5.setStyle("-fx-background-color: #000000;");
         mainContentLayout.add(sep5, 0, 9, 3, 1);
 
+        // Add the 12 hour temperature row
         GridPane hourlyLayout = new GridPane();
-        hourlyLayout.setMaxWidth(500);
-
         for (int i = 0; i < TIME_INTERVAL; i++) {
-            VBox hourlyContentSquare = new VBox(hourlyIconList.get(i), hourlyTempList.get(i), hourlyTimeList.get(i));
-            hourlyLayout.add(hourlyContentSquare, i, 0, 1, 1);
+            VBox hourlyContentSquare = new VBox(5, hourlyIconList.get(i), hourlyTempList.get(i), hourlyTimeList.get(i));
+            hourlyContentSquare.setAlignment(Pos.CENTER);
+            hourlyContentSquare.setMaxWidth(Double.MAX_VALUE);
+            GridPane.setHgrow(hourlyContentSquare, Priority.ALWAYS);
+            hourlyLayout.add(hourlyContentSquare, i, 0);
         }
 
+        // Add hourly gird to last row in main layout
         mainContentLayout.add(hourlyLayout, 0, 10, 3, 1);
+        mainContentLayout.setStyle("-fx-background-color: linear-gradient(to bottom, white, gray); -fx-background-radius: 25px;");
+        mainContentLayout.setAlignment(Pos.CENTER);
+        mainContentLayout.setMaxHeight(440);
 
-        mainContentLayout.setStyle("-fx-padding: 20px; -fx-alignment: top-center;");
-
-        return mainContentLayout;
+        StackPane backgroundWrapper = new StackPane(mainContentLayout);
+        backgroundWrapper.setStyle("-fx-padding: 15px;");
+        backgroundWrapper.setAlignment(Pos.CENTER);
+        return backgroundWrapper;
     }
 }
