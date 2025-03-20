@@ -1,6 +1,4 @@
-package Scenes;
-
-
+package ExtendedMyWeatherAPI;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 

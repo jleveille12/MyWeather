@@ -1,4 +1,4 @@
-package Scenes;
+package ExtendedMyWeatherAPI;
 
 public class Dewpoint {
     public String unitCode;

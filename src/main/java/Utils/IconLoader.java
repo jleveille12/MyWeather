@@ -18,6 +18,7 @@ public class IconLoader {
     static {
         weatherIcons.put("Sunny", "sunny.png");
         weatherIcons.put("Mostly Sunny", "sunny.png");
+        weatherIcons.put("Partly Sunny", "sunny.png");
         weatherIcons.put("Cloudy", "cloudy.png");
         weatherIcons.put("Mostly Cloudy", "cloudy.png");
         weatherIcons.put("Partly Cloudy", "cloudy.png");
@@ -25,6 +26,7 @@ public class IconLoader {
         weatherIcons.put("Clear", "clear.png");
         weatherIcons.put("Overcast", "cloudy.png");
         weatherIcons.put("Rain", "rainy.png");
+        weatherIcons.put("Light Rain", "rainy.png");
         weatherIcons.put("Heavy Rain", "heavy_rain.png");
         weatherIcons.put("Thunderstorms", "thunderstorm.png");
         weatherIcons.put("Scattered Thunderstorms", "thunderstorm.png");
@@ -40,7 +42,23 @@ public class IconLoader {
 
     public static ImageView getWeatherIcon(String forecastCondition) {
         // Load the default icon in case forecast does not match
-        String iconName = weatherIcons.getOrDefault(forecastCondition, "default.png");
+        String iconName = weatherIcons.get(forecastCondition);
+
+        // Try to find the closest match forecast condition in the map if the exact match is not found
+        if (iconName == null) {
+            for (Map.Entry<String, String> pair : weatherIcons.entrySet()) {
+                if (forecastCondition.toLowerCase().contains(pair.getKey().toLowerCase())) {
+                    // get the closest match
+                    iconName = pair.getValue();
+                    break;
+                }
+            }
+        }
+
+        // No matches, use default
+        if (iconName == null) {
+            iconName = "default.png";
+        }
 
         // Load the icon from the resources folder
         Image icon = new Image(Objects.requireNonNull(IconLoader.class.getResourceAsStream("/images/" + iconName)));

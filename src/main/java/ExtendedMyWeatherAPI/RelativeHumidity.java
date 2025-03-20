@@ -1,4 +1,4 @@
-package Scenes;
+package ExtendedMyWeatherAPI;
 
 public class RelativeHumidity {
     public String unitCode;

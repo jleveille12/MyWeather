@@ -1,9 +1,7 @@
-package Scenes;
+package ExtendedMyWeatherAPI;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import weather.Period;
-import weather.Root;
 import weather.WeatherAPI;
 
 import java.net.URI;
@@ -45,6 +43,6 @@ public class MyWeatherAPI extends WeatherAPI {
             e.printStackTrace();
         }
         return toRet;
-
     }
 }
+
